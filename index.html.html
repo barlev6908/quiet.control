@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QuietControl v27</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --card:#ffffff;
+      --ink:#2a2a2a;
+      --muted:#6a6a6a;
+      --line:#e5e7f2;
+
+      --accent1:#f3f0ff;
+      --accent2:#eef8ff;
+      --accent3:#effaf3;
+
+      --radius:16px;
+
+      --fontBody: Arial, sans-serif;
+      --fontHead: "Poppins","Heebo","Rubik","Assistant", Arial, sans-serif;
+
+      --ok:#2e9b63;
+      --bad:#c0392b;
+
+      --theadBg:#aeeeee;     /* pastel turquoise */
+      --theadInk:#134b4b;
+
+      --dayBlue:#eef8ff;
+      --dayGreen:#effaf3;
+
+      --turqBorder:#7fdede;
+
+      --accentLogin:#bfeeee;
+    }
+
+    body{
+      margin:0;
+      font-family:var(--fontBody);
+      background:linear-gradient(180deg,#f3f5ff,#fafbff);
+      color:var(--ink);
+      min-height:100vh;
+    }
+
+    /* ---------- LOGIN SCREEN ---------- */
+    #loginWrap{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .loginCard{
+      width:min(520px, 100%);
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:0 10px 30px rgba(0,0,0,0.06);
+      padding:18px;
+    }
+    .loginBrand{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .loginTitle{
+      margin:0;
+      font-family:var(--fontHead);
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:0.2px;
+    }
+    .loginSub{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+      font-family:var(--fontHead);
+    }
+    .pill{
+      background:rgba(191,238,238,0.35);
+      border:1px solid rgba(191,238,238,0.9);
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:#0f5555;
+      white-space:nowrap;
+      font-family:var(--fontHead);
+      font-weight:700;
+    }
+    .loginLabel{
+      display:block;
+      margin-top:14px;
+      margin-bottom:6px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+      font-family:var(--fontHead);
+    }
+    #pw{
+      width:100%;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      font-size:14px;
+      outline:none;
+      box-sizing:border-box;
+      font-family:var(--fontBody);
+      background:#fff; /* תיבה לבנה */
+    }
+    #pw:focus{
+      border-color:rgba(127,222,222,0.9);
+      box-shadow:0 0 0 3px rgba(127,222,222,0.25);
+    }
+    .loginRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-top:12px;
+      flex-wrap:wrap;
+    }
+    .loginBtn{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-size:13px;
+      font-weight:800;
+      font-family:var(--fontHead);
+    }
+    .loginPrimary{
+      background:var(--accentLogin);
+      border-color:rgba(127,222,222,0.9);
+      color:#0f5555;
+    }
+    .loginGhost{ color:var(--muted); }
+    #err{
+      margin-top:10px;
+      color:var(--bad);
+      font-size:12.5px;
+      display:none;
+      font-weight:800;
+      font-family:var(--fontHead);
+    }
+    .loginHint{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+
+    /* ---------- APP WRAP ---------- */
+    #appWrap{ display:none; min-height:100vh; }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:9999;
+      background:rgba(255,255,255,0.92);
+      backdrop-filter: blur(6px);
+      border-bottom:1px solid var(--line);
+      padding:10px 12px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .topbar .mini{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      font-family:var(--fontHead);
+    }
+    .logout{
+      border:1px solid rgba(192,57,43,0.35);
+      background:rgba(192,57,43,0.10);
+      color:var(--bad);
+      padding:8px 10px;
+      border-radius:999px;
+      font-weight:900;
+      cursor:pointer;
+      font-size:12px;
+      white-space:nowrap;
+      font-family:var(--fontHead);
+    }
+
+    /* ---------- V27 STYLES ---------- */
+    .wrap{max-width:1260px;margin:8px auto 14px;padding:0 12px;}
+    .grid{display:grid;grid-template-columns: 1fr 320px;gap:10px;}
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:10px;
+      margin-bottom:10px;
+    }
+
+    h1,h2{font-family:var(--fontHead);}
+    h1{margin:0;font-size:20px;line-height:1.1;}
+    h2{margin:0 0 6px;font-size:16.5px;line-height:1.1;}
+    .small{font-size:11px;color:var(--muted);line-height:1.25;}
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid var(--line);
+    }
+    th,td{border-bottom:1px solid var(--line);padding:6px;font-size:12.5px;vertical-align:top;}
+    th{
+      font-family:var(--fontHead);
+      font-weight:700;
+      background:var(--theadBg);
+      color:var(--theadInk);
+      font-size:14.5px;
+    }
+    tbody tr:last-child td{border-bottom:none;}
+
+    input,select,textarea{
+      width:100%;
+      padding:5px 6px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      font-size:12px;
+      font-family:inherit;
+      background:#fff;
+      box-sizing:border-box;
+    }
+
+    button{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:10px;
+      padding:5px 7px;
+      cursor:pointer;
+      font-size:11px;
+      line-height:1.1;
+      font-family:var(--fontHead);
+    }
+
+    .primary{background:#f1f2ff;font-weight:700;}
+
+    .btnDanger{
+      border-color: rgba(192,57,43,0.45);
+      background: rgba(192,57,43,0.12);
+      color: var(--bad);
+      font-weight:700;
+    }
+
+    .col1{background:var(--accent1);}
+    .col2{background:var(--accent2);}
+    .col3{background:var(--accent3);}
+
+    .hr{height:1px;background:var(--line);margin:8px 0;}
+
+    .archive-item{padding:7px;border-bottom:1px solid var(--line);cursor:pointer;}
+    .archive-item:hover{background:#f6f7fb;}
+    .archive-title{font-weight:700;font-size:12px;font-family:var(--fontHead);}
+
+    .top th, .top td{padding:4px;font-size:12px;}
+    .top textarea.taskText{
+      min-height:36px;
+      font-size:12px;
+      padding:5px 6px;
+      resize:none;
+      overflow:auto;
+    }
+
+    .week2 th, .week2 td{
+      padding:2px;
+      font-size:11.2px;
+      text-align:center;
+      vertical-align:middle;
+    }
+    .week2 .rowHead{
+      font-weight:700;
+      font-family:var(--fontHead);
+      background:var(--theadBg);
+      color:var(--theadInk);
+      text-align:right;
+      padding-right:7px;
+      white-space:nowrap;
+      font-size:13px;
+    }
+    .week2 .dayHead{
+      font-weight:700;
+      font-family:var(--fontHead);
+      background:var(--theadBg);
+      color:var(--theadInk);
+      font-size:13.4px;
+    }
+    .week2 .resetHead{
+      font-weight:700;
+      font-family:var(--fontHead);
+      background:var(--theadBg);
+      color:var(--theadInk);
+      width:112px;
+      font-size:13.4px;
+    }
+
+    .week2 tbody tr td:nth-child(2),
+    .week2 tbody tr td:nth-child(4),
+    .week2 tbody tr td:nth-child(6),
+    .week2 tbody tr td:nth-child(8){
+      background:var(--dayBlue);
+    }
+    .week2 tbody tr td:nth-child(3),
+    .week2 tbody tr td:nth-child(5),
+    .week2 tbody tr td:nth-child(7){
+      background:var(--dayGreen);
+    }
+
+    .taskCell{
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#fff;
+      padding:4px 6px;
+      min-height:24px;
+      line-height:1.15;
+      user-select:none;
+      text-align:right;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
+    }
+
+    .taskCell.empty{
+      background:#fcfcff;
+      border-style:dashed;
+      border-color:#dfe3f7;
+      justify-content:flex-start;
+      align-items:flex-end;
+      padding-left:6px;
+      padding-bottom:4px;
+    }
+    .taskCell.empty:hover{
+      background:#f7f8ff;
+      border-color:#cfd6ff;
+    }
+    .taskCell.empty .pencil{
+      font-size:11px;
+      color:#9aa3b2;
+      font-family:var(--fontHead);
+      opacity:0.75;
+      line-height:1;
+    }
+
+    .taskTextSpan{
+      flex:1;
+      text-align:right;
+      font-size:13.6px;
+      font-weight:600;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .taskCell.done{
+      border-color: rgba(46,155,99,0.45);
+      background: rgba(46,155,99,0.12);
+      color: var(--ok);
+    }
+    .taskCell.notdone{
+      border-color: rgba(192,57,43,0.55);
+      background: rgba(192,57,43,0.14);
+      color: var(--bad);
+    }
+
+    .taskCell.draggable{ cursor:grab; }
+    .taskCell.dragging{ opacity:0.55; }
+    .taskCell.dropHover{
+      outline:2px solid rgba(125,145,255,0.45);
+      outline-offset:2px;
+    }
+
+    .popover{
+      position:fixed;
+      z-index:9999;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:8px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.08);
+      width:190px;
+      font-family:var(--fontBody);
+    }
+    .popTitle{
+      font-family:var(--fontHead);
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+      font-weight:700;
+    }
+    .popHint{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.25;}
+    .popBtns{display:flex;gap:8px;}
+    .popBtns button{flex:1;border-radius:999px;padding:6px 8px;font-size:11.5px;}
+    .popOk{
+      border-color: rgba(46,155,99,0.45);
+      background: rgba(46,155,99,0.12);
+      color: var(--ok);
+      font-weight:700;
+    }
+    .popBad{
+      border-color: rgba(192,57,43,0.45);
+      background: rgba(192,57,43,0.12);
+      color: var(--bad);
+      font-weight:700;
+    }
+
+    .statusBtn{
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:10.8px;
+      white-space:nowrap;
+      font-family:var(--fontHead);
+    }
+
+    .side .card{padding:10px;}
+    .side h2{font-size:14.5px;}
+    .side textarea{min-height:56px !important;}
+
+    .sideNotes textarea{
+      min-height:120px !important;
+      resize:none;
+    }
+
+    .banner{
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      margin-bottom:10px;
+      position:relative;
+      height:86px;
+      background-image:
+        linear-gradient(90deg,
+          rgba(155, 220, 190, 0.72),
+          rgba(155, 220, 190, 0.40),
+          rgba(155, 220, 190, 0.18)
+        ),
+        url("banner.jpg");
+      background-size:cover;
+      background-position:center;
+    }
+
+    .banner .bannerText{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      padding:12px 14px;
+    }
+
+    .bannerTitle{
+      font-family:var(--fontHead);
+      font-weight:700;
+      font-size:22px;
+      color:#0f3f33;
+      letter-spacing:0.3px;
+    }
+    .bannerSub{
+      margin-top:4px;
+      font-family:var(--fontHead);
+      font-weight:500;
+      font-size:12.5px;
+      color:rgba(15,63,51,0.88);
+      letter-spacing:0.25px;
+    }
+
+    .top th:last-child,
+    .top td:last-child,
+    .week2 th:last-child,
+    .week2 td:last-child{
+      border-left:2px solid var(--turqBorder);
+    }
+
+    @media(max-width:1000px){
+      .grid{grid-template-columns:1fr;}
+      .taskTextSpan{white-space:normal;}
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginWrap">
+  <div class="loginCard">
+    <div class="loginBrand">
+      <div>
+        <h1 class="loginTitle">QuietControl</h1>
+        <div class="loginSub">Calm order. Real control.</div>
+      </div>
+      <div class="pill">כניסה</div>
+    </div>
+
+    <label class="loginLabel" for="pw">קוד כניסה</label>
+    <!-- תיבה ריקה לחלוטין -->
+    <input id="pw" type="password" inputmode="numeric" placeholder="" />
+
+    <div class="loginRow">
+      <button class="loginBtn loginPrimary" id="btnLogin">היכנסי</button>
+      <button class="loginBtn loginGhost" id="btnClear">נקה</button>
+    </div>
+
+    <div id="err">קוד שגוי. נסי שוב.</div>
+
+    <div class="loginHint">
+      הנתונים נשמרים במכשיר שלך בלבד.
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appWrap">
+  <div class="topbar">
+    <div class="mini">QuietControl - גרסה 27</div>
+    <button class="logout" id="btnLogout">התנתקות</button>
+  </div>
+
+  <div class="wrap">
+    <div class="grid">
+
+      <!-- MAIN -->
+      <div>
+
+        <div class="card">
+          <div class="banner" aria-label="QuietControl banner">
+            <div class="bannerText">
+              <div>
+                <div class="bannerTitle">QuietControl</div>
+                <div class="bannerSub">Calm order. Real control</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:8px;">
+            <table class="top">
+              <thead>
+                <tr>
+                  <th>המשימות שלי</th>
+                  <th>דחיפות</th>
+                  <th>בחירת יום רצוי</th>
+                  <th style="width:120px;">אפס / מחק</th>
+                </tr>
+              </thead>
+              <tbody id="brainBody"></tbody>
+            </table>
+
+            <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
+              <button id="addBrain" class="primary">הוסף שורה</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>תכנון שבועי</h2>
+
+          <div style="margin-top:8px;">
+            <table class="week2">
+              <thead>
+                <tr>
+                  <th class="dayHead">יום</th>
+                  <th class="dayHead">ראשון</th>
+                  <th class="dayHead">שני</th>
+                  <th class="dayHead">שלישי</th>
+                  <th class="dayHead">רביעי</th>
+                  <th class="dayHead">חמישי</th>
+                  <th class="dayHead">שישי</th>
+                  <th class="dayHead">שבת</th>
+                  <th class="resetHead">אפס / מחק</th>
+                </tr>
+              </thead>
+              <tbody id="weekBody"></tbody>
+            </table>
+          </div>
+
+          <div class="hr"></div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="addWeekRow" class="primary">הוסף שורה</button>
+            <button id="closeWeek">סגור שבוע ופתח חדש</button>
+            <button id="applyQueue">שבץ "שבוע הבא"</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIDE -->
+      <div class="side">
+        <div class="card">
+          <h2>תזכורת ל-WhatsApp</h2>
+
+          <div style="margin-top:8px;">
+            <textarea id="waText" placeholder='לדוגמה: ביטוח'></textarea>
+          </div>
+
+          <div style="margin-top:8px;">
+            <input id="waTime" type="time" step="3600">
+          </div>
+
+          <div style="margin-top:8px;">
+            <button id="sendWa" class="primary">פתח הודעה ל-COCO</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>שבוע הבא</h2>
+          <div class="hr"></div>
+          <div id="queueBox" class="small"></div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="clearQueue">נקה</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>ארכיון</h2>
+          <div id="archive"></div>
+        </div>
+
+        <div class="card sideNotes">
+          <h2>הערות</h2>
+          <div style="margin-top:8px;">
+            <textarea id="notesText" placeholder="כתבי כאן הערות..."></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- LOGIN LOGIC (1503) ---------- */
+const ENTRY_CODE = "1503";
+const KEY_AUTH = "qc_auth_v27";
+
+const loginWrap = document.getElementById("loginWrap");
+const appWrap   = document.getElementById("appWrap");
+const pwInput   = document.getElementById("pw");
+const errBox    = document.getElementById("err");
+
+function showApp(){
+  loginWrap.style.display = "none";
+  appWrap.style.display   = "block";
+  errBox.style.display    = "none";
+}
+function showLogin(){
+  appWrap.style.display   = "none";
+  loginWrap.style.display = "flex";
+  pwInput.value = "";
+  errBox.style.display    = "none";
+}
+function isAuthed(){
+  return localStorage.getItem(KEY_AUTH) === "1";
+}
+function setAuthed(val){
+  localStorage.setItem(KEY_AUTH, val ? "1" : "0");
+}
+function tryLogin(){
+  const val = (pwInput.value || "").trim();
+  if(val === ENTRY_CODE){
+    setAuthed(true);
+    showApp();
+  } else {
+    errBox.style.display = "block";
+    pwInput.focus();
+    pwInput.select();
+  }
+}
+document.getElementById("btnLogin").onclick = tryLogin;
+document.getElementById("btnClear").onclick = ()=>{
+  pwInput.value = "";
+  errBox.style.display = "none";
+  pwInput.focus();
+};
+document.getElementById("btnLogout").onclick = ()=>{
+  setAuthed(false);
+  showLogin();
+};
+pwInput.addEventListener("keydown", (e)=>{
+  if(e.key === "Enter") tryLogin();
+});
+
+/* ---------- V27 APP LOGIC ---------- */
+const URGENCY = ["היום","השבוע","משימה לגורם אחר"];
+const DAYS = ["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"];
+const COCO_NUMBER="12405054050";
+const KEY="quietcontrol_v27";
+
+function uid(){ return "t_" + Math.random().toString(36).slice(2) + Date.now().toString(36); }
+function esc(x){
+  return String(x ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;");
+}
+function israelDayIndex(){
+  const tzDate = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
+  return tzDate.getDay();
+}
+function roundToNextFullHour(){
+  const d=new Date();
+  d.setMinutes(0,0,0);
+  d.setHours(d.getHours()+1);
+  return String(d.getHours()).padStart(2,"0")+":00";
+}
+function weekLabel(){
+  const start=new Date();
+  const end=new Date(start);
+  end.setDate(end.getDate()+6);
+  const a=`${start.getDate()}/${start.getMonth()+1}`;
+  const b=`${end.getDate()}/${end.getMonth()+1}`;
+  return `${a}-${b}`;
+}
+function def(){
+  return{
+    notes:"",
+    brain:Array.from({length:5},()=>({ id:uid(), t:"", u:"השבוע", day:"", assigned:null })),
+    weekRowCount:3,
+    week: DAYS.map(d=>({ d, rows:[] })),
+    queue:[],
+    archive:[]
+  };
+}
+
+let s = JSON.parse(localStorage.getItem(KEY)) || def();
+const save = ()=> localStorage.setItem(KEY, JSON.stringify(s));
+
+function ensureWeekMatrix(){
+  s.week = DAYS.map((d,di)=>{
+    const existing = (s.week && s.week[di] && s.week[di].rows) ? s.week[di].rows : [];
+    const rows = [];
+    for(let ri=0; ri<s.weekRowCount; ri++){
+      const cell = existing[ri] || {text:"", status:"none", brainId:null, manual:false};
+      rows.push({
+        text: String(cell.text ?? ""),
+        status: ["none","done","notdone"].includes(cell.status) ? cell.status : "none",
+        brainId: cell.brainId ?? null,
+        manual: !!cell.manual
+      });
+    }
+    return {d, rows};
+  });
+}
+
+function normalize(){
+  if(typeof s.notes !== "string") s.notes = "";
+  if(!Array.isArray(s.brain)) s.brain = def().brain;
+  while(s.brain.length < 5){
+    s.brain.push({id:uid(), t:"", u:"השבוע", day:"", assigned:null});
+  }
+  s.brain = s.brain.map(r=>({
+    id: r?.id || uid(),
+    t: String(r?.t ?? ""),
+    u: URGENCY.includes(r?.u) ? r.u : "השבוע",
+    day: DAYS.includes(r?.day) ? r.day : "",
+    assigned: (r?.assigned && Number.isInteger(r.assigned.di) && Number.isInteger(r.assigned.ri)) ? r.assigned : null
+  }));
+  if(!Number.isInteger(s.weekRowCount) || s.weekRowCount < 3) s.weekRowCount = 3;
+  ensureWeekMatrix();
+  if(!Array.isArray(s.queue)) s.queue = [];
+  s.queue = s.queue.map(String).filter(Boolean);
+  if(!Array.isArray(s.archive)) s.archive = [];
+  save();
+}
+normalize();
+
+function getCell(di, ri){ return s.week[di].rows[ri]; }
+function isCellEmpty(di, ri){ return !getCell(di,ri).text.trim(); }
+
+function findFirstEmptyRowInDay(di, preferredRi){
+  const n = s.weekRowCount;
+  const order = [];
+  if(Number.isInteger(preferredRi) && preferredRi>=0 && preferredRi<n) order.push(preferredRi);
+  for(let r=0;r<n;r++) if(!order.includes(r)) order.push(r);
+  for(const ri of order){
+    if(isCellEmpty(di, ri)) return ri;
+  }
+  return -1;
+}
+
+function desiredDayIndex(br){
+  if(br.u==="היום") return israelDayIndex();
+  if(br.u==="השבוע"){
+    if(!br.day) return null;
+    return DAYS.indexOf(br.day);
+  }
+  return null;
+}
+
+function assignBrainToDay(brainId, di, preferredRi=null){
+  const br = s.brain.find(x=>x.id===brainId);
+  if(!br) return false;
+  const text = br.t.trim();
+  if(!text) return false;
+
+  if(br.assigned){
+    const {di:oldDi, ri:oldRi} = br.assigned;
+    if(s.week[oldDi] && s.week[oldDi].rows[oldRi] && s.week[oldDi].rows[oldRi].brainId===brainId){
+      s.week[oldDi].rows[oldRi] = {text:"", status:"none", brainId:null, manual:false};
+    }
+    br.assigned=null;
+  }
+
+  const ri = findFirstEmptyRowInDay(di, preferredRi);
+  if(ri === -1){
+    if(!s.queue.includes(brainId)) s.queue.unshift(brainId);
+    save();
+    return false;
+  }
+
+  s.week[di].rows[ri] = { text:text, status:"none", brainId:brainId, manual:false };
+  br.assigned = {di, ri};
+  s.queue = s.queue.filter(x=>x!==brainId);
+  save();
+  return true;
+}
+
+function createBrainFromWeekly(di, ri, text){
+  const newRow = { id:uid(), t:text, u:"השבוע", day:DAYS[di], assigned:{di, ri} };
+  s.brain.push(newRow);
+  s.week[di].rows[ri].brainId = newRow.id;
+  s.week[di].rows[ri].manual = false;
+  return newRow.id;
+}
+
+function renderBrain(){
+  const tb = document.getElementById("brainBody");
+  tb.innerHTML="";
+
+  s.brain.forEach((r,i)=>{
+    const tr=document.createElement("tr");
+    const dayDisabled = !(r.u==="השבוע");
+    const dayOptions = [`<option value="" ${r.day===""?"selected":""}>בחרי</option>`]
+      .concat(DAYS.map(d=>`<option value="${d}" ${d===r.day?"selected":""}>${d}</option>`))
+      .join("");
+
+    tr.innerHTML=`
+      <td class="col1"><textarea class="taskText" placeholder="רעיונות / משימות...">${esc(r.t)}</textarea></td>
+      <td class="col2">
+        <select>
+          ${URGENCY.map(o=>`<option ${o===r.u?"selected":""}>${o}</option>`).join("")}
+        </select>
+      </td>
+      <td class="col3">
+        <select ${dayDisabled ? "disabled" : ""}>
+          ${dayOptions}
+        </select>
+      </td>
+      <td style="display:flex;gap:6px;align-items:center;justify-content:center;">
+        <button class="btnReset">אפס</button>
+        <button class="btnDanger">מחק</button>
+      </td>
+    `;
+
+    const taTask = tr.querySelector(".taskText");
+    const selU   = tr.querySelectorAll("select")[0];
+    const selDay = tr.querySelectorAll("select")[1];
+    const btnReset = tr.querySelector(".btnReset");
+    const btnDel = tr.querySelector(".btnDanger");
+
+    taTask.oninput = (e)=>{
+      r.t = e.target.value;
+
+      if(r.assigned){
+        const {di,ri} = r.assigned;
+        const cell = getCell(di,ri);
+        if(cell && cell.brainId===r.id){
+          cell.text = r.t.trim();
+          cell.manual = false;
+        }
+      }
+      save();
+      renderWeek();
+    };
+
+    selU.onchange = (e)=>{
+      r.u = e.target.value;
+
+      if(r.u==="משימה לגורם אחר"){
+        if(r.assigned){
+          const {di,ri}=r.assigned;
+          s.week[di].rows[ri] = {text:"", status:"none", brainId:null, manual:false};
+          r.assigned=null;
+        }
+        r.day="";
+        s.queue = s.queue.filter(x=>x!==r.id);
+        save();
+        renderBrain(); renderWeek(); renderQueue();
+        return;
+      }
+
+      if(r.u==="היום"){
+        r.day="";
+        assignBrainToDay(r.id, israelDayIndex(), null);
+        save();
+        renderBrain(); renderWeek(); renderQueue();
+        return;
+      }
+
+      if(r.u==="השבוע"){
+        if(r.assigned){
+          const {di,ri}=r.assigned;
+          s.week[di].rows[ri] = {text:"", status:"none", brainId:null, manual:false};
+          r.assigned=null;
+        }
+        save();
+        renderBrain(); renderWeek(); renderQueue();
+        return;
+      }
+    };
+
+    selDay.onchange = (e)=>{
+      r.day = e.target.value;
+      if(r.u!=="השבוע"){ save(); return; }
+
+      if(!r.day){
+        if(r.assigned){
+          const {di,ri}=r.assigned;
+          s.week[di].rows[ri] = {text:"", status:"none", brainId:null, manual:false};
+          r.assigned=null;
+        }
+        save();
+        renderWeek(); renderQueue();
+        return;
+      }
+
+      const di = DAYS.indexOf(r.day);
+      assignBrainToDay(r.id, di, null);
+      save();
+      renderWeek(); renderQueue();
+    };
+
+    btnReset.onclick = ()=>{
+      if(r.assigned){
+        const {di,ri}=r.assigned;
+        s.week[di].rows[ri] = {text:"", status:"none", brainId:null, manual:false};
+      }
+      s.queue = s.queue.filter(x=>x!==r.id);
+      s.brain[i] = { id:uid(), t:"", u:"השבוע", day:"", assigned:null };
+      save();
+      renderBrain(); renderWeek(); renderQueue();
+    };
+
+    btnDel.onclick = ()=>{
+      if(!confirm("למחוק שורה?")) return;
+
+      if(r.assigned){
+        const {di,ri}=r.assigned;
+        const cell = getCell(di,ri);
+        if(cell && cell.brainId===r.id){
+          s.week[di].rows[ri] = {text:"", status:"none", brainId:null, manual:false};
+        }
+      }
+
+      s.queue = s.queue.filter(x=>x!==r.id);
+      s.brain.splice(i,1);
+
+      while(s.brain.length < 5){
+        s.brain.push({ id:uid(), t:"", u:"השבוע", day:"", assigned:null });
+      }
+
+      save();
+      renderBrain(); renderWeek(); renderQueue();
+    };
+
+    tb.appendChild(tr);
+  });
+}
+
+document.getElementById("addBrain").onclick = ()=>{
+  s.brain.push({ id:uid(), t:"", u:"השבוע", day:"", assigned:null });
+  save();
+  renderBrain();
+};
+
+const notesEl = document.getElementById("notesText");
+notesEl.value = s.notes || "";
+notesEl.oninput = (e)=>{ s.notes = e.target.value; save(); };
+
+let activePop=null;
+function closePop(){ if(activePop){ activePop.remove(); activePop=null; } }
+document.addEventListener("click",(e)=>{ if(activePop && !activePop.contains(e.target)) closePop(); });
+
+function showPop(anchorEl, di, ri){
+  closePop();
+  const pop=document.createElement("div");
+  pop.className="popover";
+  pop.innerHTML=`
+    <div class="popTitle">סטטוס למשימה</div>
+    <div class="popBtns">
+      <button class="popOk">טופל</button>
+      <button class="popBad">לא טופל</button>
+    </div>
+    <div class="popHint">"לא טופל" נשאר אדום בטבלה + נוסף ל"שבוע הבא"</div>
+  `;
+
+  const rect=anchorEl.getBoundingClientRect();
+  let left = rect.left + 10;
+  let top  = rect.top + rect.height + 8;
+  if(left + 210 > window.innerWidth) left = window.innerWidth - 220;
+  if(top + 150 > window.innerHeight) top = rect.top - 160;
+
+  pop.style.left = left + "px";
+  pop.style.top  = top + "px";
+
+  pop.querySelector(".popOk").onclick=(ev)=>{ ev.stopPropagation(); closePop(); setStatus(di,ri,"done"); };
+  pop.querySelector(".popBad").onclick=(ev)=>{ ev.stopPropagation(); closePop(); setStatus(di,ri,"notdone"); };
+
+  document.body.appendChild(pop);
+  activePop=pop;
+}
+
+function setStatus(di, ri, status){
+  const cell = getCell(di,ri);
+  if(!cell.text.trim()){
+    alert("אין משימה לסימון");
+    return;
+  }
+  if(status==="done"){
+    cell.status="done";
+    save(); renderWeek();
+    return;
+  }
+  cell.status="notdone";
+  if(cell.brainId){
+    if(!s.queue.includes(cell.brainId)) s.queue.unshift(cell.brainId);
+  }
+  save(); renderWeek(); renderQueue();
+}
+
+function manualEditCell(di, ri){
+  const cell = getCell(di,ri);
+  const current = cell.text.trim();
+  const val = prompt("ערכי משימה (השאירי ריק כדי למחוק):", current);
+  if(val===null) return;
+
+  const clean = (val||"").trim();
+
+  if(cell.brainId){
+    const br = s.brain.find(x=>x.id===cell.brainId);
+    if(!clean){
+      if(br){
+        br.t = "";
+        br.assigned = null;
+      }
+      s.week[di].rows[ri] = {text:"", status:"none", brainId:null, manual:false};
+    }else{
+      s.week[di].rows[ri].text = clean;
+      s.week[di].rows[ri].manual = false;
+      s.week[di].rows[ri].status = "none";
+      if(br){
+        br.t = clean;
+      }
+    }
+    save();
+    renderBrain(); renderWeek(); renderQueue();
+    return;
+  }
+
+  if(!clean){
+    s.week[di].rows[ri] = {text:"", status:"none", brainId:null, manual:false};
+  }else{
+    s.week[di].rows[ri] = {text:clean, status:"none", brainId:null, manual:true};
+    createBrainFromWeekly(di, ri, clean);
+  }
+
+  save();
+  renderBrain(); renderWeek(); renderQueue();
+}
+
+function moveCell(fromDi, fromRi, toDi, preferredRi){
+  const fromCell = getCell(fromDi, fromRi);
+  const txt = fromCell.text.trim();
+  if(!txt) return;
+
+  const destRi = findFirstEmptyRowInDay(toDi, preferredRi);
+  if(destRi === -1){
+    alert("אין מקום פנוי ביום שבחרת. הוסיפי שורה.");
+    return;
+  }
+
+  const payload = {
+    text: txt,
+    status: fromCell.status || "none",
+    brainId: fromCell.brainId || null,
+    manual: !!fromCell.manual
+  };
+
+  s.week[fromDi].rows[fromRi] = {text:"", status:"none", brainId:null, manual:false};
+  s.week[toDi].rows[destRi] = payload;
+
+  if(payload.brainId){
+    const br = s.brain.find(x=>x.id===payload.brainId);
+    if(br){
+      br.assigned = {di:toDi, ri:destRi};
+      if(br.u==="היום") br.u="השבוע";
+      if(br.u==="השבוע") br.day = DAYS[toDi];
+    }
+  }
+
+  save();
+  renderBrain(); renderWeek(); renderQueue();
+}
+
+function resetWeekRow(ri){
+  if(!confirm(`לאפס את שורה ${ri+1}?`)) return;
+  for(let di=0; di<7; di++){
+    const cell = getCell(di, ri);
+    if(cell.brainId){
+      const br = s.brain.find(x=>x.id===cell.brainId);
+      if(br) br.assigned=null;
+    }
+    s.week[di].rows[ri] = {text:"", status:"none", brainId:null, manual:false};
+  }
+  save();
+  renderBrain(); renderWeek(); renderQueue();
+}
+
+function deleteWeekRow(ri){
+  if(!confirm(`למחוק את שורה ${ri+1} מכל השבוע?`)) return;
+
+  for(let di=0; di<7; di++){
+    const cell = getCell(di, ri);
+    if(cell.brainId){
+      const br = s.brain.find(x=>x.id===cell.brainId);
+      if(br) br.assigned=null;
+      s.queue = s.queue.filter(x=>x!==cell.brainId);
+    }
+  }
+
+  for(let di=0; di<7; di++){
+    s.week[di].rows.splice(ri,1);
+  }
+
+  for(const br of s.brain){
+    if(br.assigned && br.assigned.ri > ri){
+      br.assigned.ri -= 1;
+    }else if(br.assigned && br.assigned.ri === ri){
+      br.assigned = null;
+    }
+  }
+
+  s.weekRowCount = Math.max(3, s.weekRowCount - 1);
+  ensureWeekMatrix();
+
+  save();
+  renderBrain(); renderWeek(); renderQueue();
+}
+
+function renderWeek(){
+  ensureWeekMatrix();
+  const tb=document.getElementById("weekBody");
+  tb.innerHTML="";
+
+  for(let ri=0; ri<s.weekRowCount; ri++){
+    const tr=document.createElement("tr");
+
+    const head=document.createElement("td");
+    head.className="rowHead";
+    head.textContent = `משימה ${ri+1}`;
+    tr.appendChild(head);
+
+    for(let di=0; di<7; di++){
+      const td=document.createElement("td");
+      const div=document.createElement("div");
+      div.className="taskCell";
+
+      const cell = getCell(di,ri);
+      const txt = cell.text.trim();
+      const st  = cell.status;
+
+      if(st==="done") div.classList.add("done");
+      if(st==="notdone") div.classList.add("notdone");
+
+      td.ondragover=(e)=>{ e.preventDefault(); div.classList.add("dropHover"); };
+      td.ondragleave=()=>div.classList.remove("dropHover");
+      td.ondrop=(e)=>{
+        e.preventDefault();
+        div.classList.remove("dropHover");
+        closePop();
+
+        const raw = e.dataTransfer.getData("text/plain");
+        if(!raw) return;
+        let data=null;
+        try{ data=JSON.parse(raw); }catch(_){ return; }
+        if(!data) return;
+
+        moveCell(data.fromDi, data.fromRi, di, ri);
+      };
+
+      const statusBtn = document.createElement("button");
+      statusBtn.className="statusBtn";
+      statusBtn.textContent = "סטטוס";
+      statusBtn.onclick = (e) => {
+        e.stopPropagation();
+        if(!getCell(di,ri).text.trim()){
+          alert("אין משימה לסימון");
+          return;
+        }
+        showPop(div, di, ri);
+      };
+
+      div.onclick=(e)=>{
+        e.stopPropagation();
+        closePop();
+        manualEditCell(di, ri);
+      };
+
+      if(!txt){
+        div.classList.add("empty");
+        const pencil=document.createElement("span");
+        pencil.className="pencil";
+        pencil.textContent="✎";
+        div.appendChild(pencil);
+      }else{
+        const span=document.createElement("span");
+        span.className="taskTextSpan";
+        span.title = txt;
+        span.textContent = txt;
+        div.appendChild(span);
+
+        div.classList.add("draggable");
+        div.draggable = true;
+
+        div.ondragstart=(e)=>{
+          closePop();
+          div.classList.add("dragging");
+          e.dataTransfer.effectAllowed="move";
+          e.dataTransfer.setData("text/plain", JSON.stringify({fromDi: di, fromRi: ri}));
+        };
+        div.ondragend=()=>{ div.classList.remove("dragging"); };
+
+        div.appendChild(statusBtn);
+      }
+
+      td.appendChild(div);
+      tr.appendChild(td);
+    }
+
+    const actionsTd=document.createElement("td");
+    actionsTd.style.display="flex";
+    actionsTd.style.gap="6px";
+    actionsTd.style.justifyContent="center";
+    actionsTd.style.alignItems="center";
+
+    const bReset=document.createElement("button");
+    bReset.textContent="אפס";
+    bReset.onclick=()=>resetWeekRow(ri);
+
+    const bDel=document.createElement("button");
+    bDel.textContent="מחק";
+    bDel.className="btnDanger";
+    bDel.onclick=()=>deleteWeekRow(ri);
+
+    actionsTd.appendChild(bReset);
+    actionsTd.appendChild(bDel);
+    tr.appendChild(actionsTd);
+
+    tb.appendChild(tr);
+  }
+}
+
+function renderQueue(){
+  const box=document.getElementById("queueBox");
+  const items = s.queue
+    .map(id=>s.brain.find(b=>b.id===id))
+    .filter(Boolean)
+    .filter(br=>br.t.trim());
+
+  if(!items.length){
+    box.innerHTML="אין משימות.";
+    return;
+  }
+
+  box.innerHTML = `
+    <ol style="margin:0;padding-right:18px;">
+      ${items.map(br=>`
+        <li style="margin:6px 0;">
+          ${esc(br.t.trim())}
+          <span style="color:var(--muted);font-size:11px;">(${esc(br.u)}${br.day? " - "+esc(br.day):""})</span>
+          <button style="margin-right:6px;" onclick="removeQueueById('${br.id}')">מחק</button>
+        </li>
+      `).join("")}
+    </ol>
+  `;
+}
+
+window.removeQueueById=(id)=>{
+  s.queue = s.queue.filter(x=>x!==id);
+  save();
+  renderQueue();
+};
+
+document.getElementById("clearQueue").onclick=()=>{
+  if(!confirm("לנקות?")) return;
+  s.queue=[];
+  save();
+  renderQueue();
+};
+
+function applyQueue(){
+  const q=[...s.queue];
+  s.queue=[];
+
+  for(const id of q){
+    const br = s.brain.find(x=>x.id===id);
+    if(!br || !br.t.trim()) continue;
+    if(br.u==="משימה לגורם אחר") continue;
+
+    const di = desiredDayIndex(br);
+    if(di===null){
+      s.queue.push(id);
+      continue;
+    }
+    assignBrainToDay(id, di, null);
+  }
+
+  save();
+  renderBrain();
+  renderWeek();
+  renderQueue();
+}
+document.getElementById("applyQueue").onclick=applyQueue;
+
+document.getElementById("addWeekRow").onclick=()=>{
+  s.weekRowCount += 1;
+  ensureWeekMatrix();
+  save();
+  renderWeek();
+};
+
+function closeWeek(){
+  if(!confirm('לסגור שבוע? כל מה שלא "טופל" יועתק ל"שבוע הבא" (וגם יישאר בארכיון).')) return;
+
+  for(let di=0; di<7; di++){
+    for(let ri=0; ri<s.weekRowCount; ri++){
+      const cell = getCell(di,ri);
+      const txt = cell.text.trim();
+      if(!txt) continue;
+      if(cell.status==="done") continue;
+
+      if(cell.brainId){
+        const br = s.brain.find(x=>x.id===cell.brainId);
+        if(br) br.assigned=null;
+        if(!s.queue.includes(cell.brainId)) s.queue.unshift(cell.brainId);
+      }
+    }
+  }
+
+  s.archive.unshift({
+    label: weekLabel(),
+    weekRowCount: s.weekRowCount,
+    week: JSON.parse(JSON.stringify(s.week))
+  });
+
+  ensureWeekMatrix();
+  for(let di=0; di<7; di++){
+    for(let ri=0; ri<s.weekRowCount; ri++){
+      s.week[di].rows[ri] = {text:"", status:"none", brainId:null, manual:false};
+    }
+  }
+  for(const br of s.brain) br.assigned=null;
+
+  save();
+  renderBrain();
+  renderWeek();
+  renderQueue();
+  renderArchive();
+}
+document.getElementById("closeWeek").onclick=closeWeek;
+
+function renderArchive(){
+  const a=document.getElementById("archive");
+  a.innerHTML="";
+  if(!s.archive.length){
+    a.innerHTML=`<div class="small">אין.</div>`;
+    return;
+  }
+  s.archive.forEach(w=>{
+    const d=document.createElement("div");
+    d.className="archive-item";
+    d.innerHTML=`<div class="archive-title">${esc(w.label)}</div>`;
+    d.onclick=()=>{
+      const lines=[];
+      for(let di=0; di<7; di++){
+        const dayName = DAYS[di];
+        const cells = (w.week?.[di]?.rows || [])
+          .map(c=>{
+            const t=(c.text||"").trim();
+            if(!t) return "";
+            const mark = c.status==="done" ? "✓ " : (c.status==="notdone" ? "✗ " : "• ");
+            return mark + t;
+          })
+          .filter(Boolean)
+          .join(" | ");
+        lines.push(`${dayName}: ${cells}`);
+      }
+      alert(lines.join("\n") || "אין נתונים");
+    };
+    a.appendChild(d);
+  });
+}
+
+document.getElementById("waTime").value = roundToNextFullHour();
+document.getElementById("sendWa").onclick=()=>{
+  const text=(document.getElementById("waText").value||"").trim();
+  const time=(document.getElementById("waTime").value||"").trim();
+  if(!text) return alert("נא למלא טקסט");
+  if(!time) return alert("נא לבחור שעה");
+  const msg=`תזכיר לי "${text}" בשעה ${time}`;
+  window.open(`https://wa.me/${COCO_NUMBER}?text=${encodeURIComponent(msg)}`,"_blank");
+};
+
+function initialPlaceFromTop(){
+  ensureWeekMatrix();
+
+  for(const br of s.brain) br.assigned=null;
+  for(let di=0; di<7; di++){
+    for(let ri=0; ri<s.weekRowCount; ri++){
+      const cell = getCell(di,ri);
+      if(cell.brainId){
+        const br = s.brain.find(x=>x.id===cell.brainId);
+        if(br) br.assigned={di,ri};
+      }
+    }
+  }
+
+  for(const br of s.brain){
+    const di = desiredDayIndex(br);
+    if(di===null) continue;
+
+    if(br.assigned){
+      const cell = getCell(br.assigned.di, br.assigned.ri);
+      if(cell && cell.brainId===br.id){
+        cell.text = br.t.trim();
+        cell.manual = false;
+      }
+      continue;
+    }
+
+    assignBrainToDay(br.id, di, null);
+  }
+
+  save();
+}
+
+/* Start */
+initialPlaceFromTop();
+renderBrain();
+renderWeek();
+renderQueue();
+renderArchive();
+save();
+
+/* Show correct screen */
+if(isAuthed()){
+  showApp();
+} else {
+  showLogin();
+}
+</script>
+
+</body>
+</html>
